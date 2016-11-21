@@ -66,15 +66,13 @@
     // parse the XML and create the final results array
     foreach($resultsPresent->xpath('//present/record') as $record) {
       $record = simplexml_load_string($record->asXML());
-      $entry = $record->xpath('/record/record_header/set_entry');
       $title = $record->xpath('/record/metadata/oai_marc/varfield[@id="200"]/subfield[@label="a"]');
       $author = $record->xpath('/record/metadata/oai_marc/varfield[@id="200"]/subfield[@label="f"]');
+      $doc_number = $record->doc_number;
       // checking if any of the results are empty
       if (empty($title)) { $title = ''; } else { $title = $title[0]->__toString(); }
       if (empty($author)) { $author = ''; } else { $author = $author[0]->__toString(); }
-      // mangle set_entry, because Aleph
-      $set_entry = str_pad(strval((int)$entry[0]->__toString()), 6, '0', STR_PAD_LEFT);
-      $url = $alephHost . ':' . $alephOpacPort . '/F/?func=full-set-set&set_number=' . $resultsFind->{'set_number'} . '&set_entry=' . $set_entry . '&format=999';
+      $url = $alephHost . ':' . $alephOpacPort . '/F/?func=direct&local_base=' . $catalog . '&doc_number=' . $doc_number;
       $resultsArray[] = [
         'title' => $title,
         'author' => $author,
